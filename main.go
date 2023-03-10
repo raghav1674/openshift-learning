@@ -18,7 +18,7 @@ func main(){
 	r := http.NewServeMux()
 
 	r.HandleFunc("/",func(w http.ResponseWriter, req *http.Request){
-		fmt.Fprintf(w,"Hello World")
+		fmt.Fprintf(w,"Hello World!!")
 		log.Printf("%s %d %s",req.Method,200,req.URL.Path)
 	})
 
