@@ -30,7 +30,6 @@ func main(){
 		counter++
 	})
 
-
 	log.Printf("Server is listening on port %d",PORT)
 	http.ListenAndServe(fmt.Sprintf(":%d",PORT),r)
 }
