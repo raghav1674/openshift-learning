@@ -1,0 +1,17 @@
+FROM raggupta/azdo-rhelubi8-build-docker-agent:v1-latest
+
+LABEL author ragaws1674@gmail.com
+LABEL version v1
+
+# Install necessary packages
+COPY ./terraform.repo /etc/yum.repos.d/terraform.repo
+
+# Inorder to install use root user
+USER root
+
+RUN yum install terraform -y
+
+# Switch back to 1000 uid as defined in base image
+USER 1000
+
+### IMP: Don't override the ENTRYPOINT or the CMD 
