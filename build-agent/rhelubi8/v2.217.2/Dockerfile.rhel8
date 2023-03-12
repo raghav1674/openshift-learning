@@ -1,0 +1,38 @@
+FROM registry.redhat.io/ubi8:8.2-347
+
+ENV AGENT_VERSION=2.217.2
+# Can be 'linux-x64', 'linux-arm64', 'linux-arm', 'rhel.6-x64'.
+ENV TARGETARCH=linux-x64
+
+RUN yum update -y && yum install -y \
+    ca-certificates \
+    curl \
+    wget \
+    jq \
+    git \
+    lttng-ust \
+    krb5-libs \
+    zlib \
+    libicu \
+    net-tools \
+    hostname
+
+RUN useradd build-admin -d /azp -g root -u 1000
+
+WORKDIR /azp
+# https://developers.redhat.com/blog/2020/10/26/adapting-docker-and-kubernetes-containers-to-run-on-red-hat-openshift-container-platform#runtime_user_compatibility_with_kubernetes
+
+RUN wget -c https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/vsts-agent-${TARGETARCH}-${AGENT_VERSION}.tar.gz -qO - | tar -xz --strip-component 1 -C /azp/
+
+# OC - Always change the group ownership to 0
+RUN chgrp -R 0 /azp && chmod -R g=u /azp
+
+COPY ./start.sh .
+# OC - Always change the mode to 775 for executables
+RUN chmod 775 start.sh run.sh
+
+# Compatibiliy with the k8s
+RUN chown -R 1000:0 /azp
+USER 1000
+
+ENTRYPOINT ["./start.sh"]
