@@ -1,0 +1,16 @@
+FROM raggupta/azdo-rhelubi8-build-docker-agent:v1-latest
+
+LABEL author ragaws1674@gmail.com
+LABEL version v1
+
+# Inorder to install use root user
+USER root
+
+RUN yum install zip  -y
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install && rm -rf ./awscliv2.zip ./aws
+
+# Switch back to 1000 uid as defined in base image
+USER 1000
+
+### IMP: Don't override the ENTRYPOINT or the CMD 
